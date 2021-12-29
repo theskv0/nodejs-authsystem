@@ -5,7 +5,7 @@ import consola from 'consola';
 import mongoose from 'mongoose';
 import { json } from 'body-parser';
 import { DB_CONN, PORT } from './configs';
-import { WebRouter, UserRouter } from './routes';
+import { WebRouter } from './routes';
 
 // Load global variables
 require('./global');
@@ -19,7 +19,6 @@ app.use(json());
 
 // Inject routers
 app.use('/', WebRouter);
-app.use('/users', UserRouter);
 
 // Static files
 app.use(express.static('public'));
@@ -28,13 +27,12 @@ app.use(express.static('uploads'));
 // 404 handler
 app.use(function(req, res, next) {
    res.status = 404;
-   console.log(req.accepts('json'));
-   if(req.accepts('json')) {
+   if(req.accepts('html')) {
+      res.sendFile(path.join(ViewDir, '/errors/404.html'));
+   } else {
       res.json({
          message: 'Endpoint not exists!'
       })
-   } else {
-      res.sendFile(path.join(ViewDir, '/errors/404.html'));
    }
    return;
 });
