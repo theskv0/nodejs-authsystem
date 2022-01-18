@@ -12,4 +12,4 @@ export const APP_URL = process.env.APP_URL;
 export const PORT = process.env.PORT || process.env.APP_PORT;
 
 // Application Secret
-export const APP_SECRET = process.env.APP_SECRET;
+export const APP_SECRET = process.env.APP_KEY;

@@ -38,7 +38,7 @@ const UserSchema = new Schema({
       type: Date,
       required: false
    },
-}, { timeseries: true });
+}, { timestamps: true });
 
 UserSchema.pre('save', async function (next) { 
    let user = this;

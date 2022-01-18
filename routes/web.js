@@ -1,3 +1,4 @@
+import passport from "passport";
 import { Router } from "express";
 import { homeView } from "../controllers/HomeController";
 import * as Auth from './../controllers/AuthController';
@@ -12,11 +13,11 @@ import {
 const router = Router();
 
 router.get('/', Auth.authenticateUserView);
-router.post('/login', Auth.authenticateUser);
+router.post('/login', AuthenticateValidations, Validator, Auth.authenticateUser);
 
 router.get('/register', Auth.registerUserView);
 router.post('/register', RegisterValidations, Validator, Auth.registerUser);
 
-router.get('/dashboard', homeView);
+router.get('/dashboard', passport.authenticate('jwt', {session: false}), homeView);
 
 export default router;

@@ -32,6 +32,9 @@
   <!-- Vuejs -->
   <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14"></script>
 
+  <!-- Sweetalert -->
+  <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+
 </head>
 
 <body>
@@ -64,35 +67,35 @@
                     <div class="col-12">
                       <label for="yourName" class="form-label">Your Name*</label>
                       <input type="text" v-model="formdata.name" class="form-control" id="yourName">
-                      <div class="text-danger">{{ errors.name }}</div>
+                      <p class="text-danger small">{{ errors.name }}</p>
                     </div>
 
                     <div class="col-12">
                       <label for="yourEmail" class="form-label">Your Email*</label>
                       <input type="email" v-model="formdata.email" class="form-control" id="yourEmail">
-                      <div class="text-danger">{{ errors.email }}</div>
+                      <p class="text-danger small">{{ errors.email }}</p>
                     </div>
 
                     <div class="col-12">
                       <label for="yourUsername" class="form-label">Username*</label>
                       <div class="input-group has-validation">
                         <span class="input-group-text" id="inputGroupPrepend">@</span>
-                        <input type="text" v-model="formdata.username" class="form-control" id="yourUsername" required>
-                        <div class="text-danger">{{ errors.username }}</div>
+                        <input type="text" v-model="formdata.username" class="form-control" id="yourUsername">
+                        <p class="text-danger small">{{ errors.username }}</p>
                       </div>
                     </div>
 
                     <div class="col-12">
                       <label for="yourPassword" class="form-label">Password*</label>
                       <input type="password" v-model="formdata.password" class="form-control" id="yourPassword">
-                      <div class="text-danger">{{ errors.password }}</div>
+                      <p class="text-danger small">{{ errors.password }}</p>
                     </div>
 
                     <div class="col-12">
                       <div class="form-check">
-                        <input class="form-check-input" v-model="formdata.terms" type="checkbox" value="" id="acceptTerms">
+                        <input class="form-check-input" v-model="formdata.terms" type="checkbox" value="1" id="acceptTerms">
                         <label class="form-check-label" for="acceptTerms">I agree and accept the <a href="javascript:;">terms and conditions</a></label>
-                        <div class="text-danger">{{ errors.terms }}</div>
+                        <p class="text-danger small">{{ errors.terms }}</p>
                       </div>
                     </div>
                     <div class="col-12">
@@ -144,7 +147,7 @@
                     email: 'sumitverma.sparx@gmail.com',
                     username: 'sumit',
                     password: 'password',
-                    terms: false
+                    terms: true
                 },
                 errors: {
                     name: null,
@@ -157,7 +160,50 @@
         },
         methods: {
             register() {
-                fetch('/')
+              if(this.validator()) {
+                fetch('/register', {
+                  method: 'POST',
+                  headers: {
+                    'Content-Type': 'application/json'
+                  },
+                  body: JSON.stringify(this.formdata)
+                })
+                .then( res => res.json())
+                .then(res => {
+                  if(res.data) {
+                    swal({
+                      title: 'Success!',
+                      text: res.message,
+                      icon: "success",
+                      button: "Ok",
+                    });
+                    location.href = '/'
+                  }
+                  else if(res.errors) {
+                    swal({
+                      title: 'An error occurred!',
+                      text: res.message,
+                      icon: "error",
+                      button: "Ok",
+                    });
+                    this.errors.name = res.errors.find(o => o.param == 'name')?.msg
+                    this.errors.username = res.errors.find(o => o.param == 'username')?.msg
+                    this.errors.email = res.errors.find(o => o.param == 'email')?.msg
+                    this.errors.password = res.errors.find(o => o.param == 'password')?.msg
+                  }
+                })
+                .catch( err => {
+                  console.error(err)
+                })
+              }
+            },
+            validator() {
+              if(this.formdata.terms) {
+                this.errors.terms = null
+                return true
+              }
+              this.errors.terms = 'Plese read and accept the terms.'
+              return false
             }
         }
       });

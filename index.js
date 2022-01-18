@@ -3,6 +3,7 @@ import path from 'path';
 import express from 'express';
 import consola from 'consola';
 import mongoose from 'mongoose';
+import passport from 'passport';
 import { json } from 'body-parser';
 import { DB_CONN, PORT } from './configs';
 import { WebRouter } from './routes';
@@ -10,12 +11,16 @@ import { WebRouter } from './routes';
 // Load global variables
 require('./global');
 
+// Import passport middleware
+require('./middlewares/passport-middleware.js');
+
 // Initialize express app
 const app = express();
 
 // Apply application middlewares
 app.use(cors());
 app.use(json());
+app.use(passport.initialize());
 
 // Inject routers
 app.use('/', WebRouter);

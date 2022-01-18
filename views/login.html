@@ -29,12 +29,18 @@
   <!-- Template Main CSS File -->
   <link href="assets/css/style.css" rel="stylesheet">
 
+  <!-- Vuejs -->
+  <script src="https://cdn.jsdelivr.net/npm/vue@2.6.14"></script>
+
+  <!-- Sweetalert -->
+  <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+
 </head>
 
 <body>
 
   <main>
-    <div class="container">
+    <div class="container" id="app" v-cloak>
 
       <section class="section register min-vh-100 d-flex flex-column align-items-center justify-content-center py-4">
         <div class="container">
@@ -58,21 +64,21 @@
                     <p class="text-center small">Enter your username & password to login</p>
                   </div>
 
-                  <form class="row g-3 needs-validation" novalidate>
+                  <form @submit.prevent="login()" class="row g-3 needs-validation">
 
                     <div class="col-12">
                       <label for="yourUsername" class="form-label">Username</label>
                       <div class="input-group has-validation">
                         <span class="input-group-text" id="inputGroupPrepend">@</span>
-                        <input type="text" name="username" class="form-control" id="yourUsername" required>
-                        <div class="invalid-feedback">Please enter your username.</div>
+                        <input type="text" v-model="formdata.username" class="form-control" id="yourUsername">
+                        <p class="text-danger small">{{ errors.username }}</p>
                       </div>
                     </div>
 
                     <div class="col-12">
                       <label for="yourPassword" class="form-label">Password</label>
-                      <input type="password" name="passwword" class="form-control" id="yourPassword" required>
-                      <div class="invalid-feedback">Please enter your password!</div>
+                      <input type="password" v-model="formdata.password" class="form-control" id="yourPassword">
+                      <p class="text-danger small">{{ errors.password }}</p>
                     </div>
 
                     <div class="col-12">
@@ -120,6 +126,56 @@
 
   <!-- Template Main JS File -->
   <script src="assets/js/main.js"></script>
+
+  <script>
+    let app = new Vue({
+      el: '#app',
+      data() {
+        return {
+          formdata: {
+            username: 'sumit',
+            password: 'password',
+            remember: false
+          },
+          errors: {
+            username: null,
+            password: null,
+          }
+        }
+      },
+      methods: {
+        login() {
+          fetch('/login', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(this.formdata)
+          })
+          .then(res => res.json())
+          .then(res => {
+            if (res.data) {
+              localStorage.setItem('token', res.data.token)
+              location.href = '/dashboard'
+            }
+            else if (res.errors) {
+              swal({
+                title: 'An error occurred!',
+                text: res.message,
+                icon: "error",
+                button: "Ok",
+              });
+              this.errors.username = res.errors.find(o => o.param == 'username')?.msg
+              this.errors.password = res.errors.find(o => o.param == 'password')?.msg
+            }
+          })
+          .catch(err => {
+            console.error(err)
+          })
+        }
+      }
+    });
+  </script>
 
 </body>
 
