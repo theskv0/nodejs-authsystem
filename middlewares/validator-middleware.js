@@ -1,12 +1,10 @@
 import { validationResult } from "express-validator";
+import { ResponseService as RS } from "../services";
 
 const handleValidationErrors = (req, res, next) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
-    return res.status(422).json({
-      message: "Invalid input!",
-      errors: errors.array()
-    });
+    return RS.invalidInput(res, "Invalid input!", { errors: errors.array() });
   }
   next();
 };

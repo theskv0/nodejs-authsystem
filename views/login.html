@@ -145,7 +145,7 @@
       },
       methods: {
         login() {
-          fetch('/login', {
+          fetch('/api/auth/login', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json'
@@ -165,8 +165,8 @@
                 icon: "error",
                 button: "Ok",
               });
-              this.errors.username = res.errors.find(o => o.param == 'username')?.msg
-              this.errors.password = res.errors.find(o => o.param == 'password')?.msg
+              this.data.errors.username = res.errors.find(o => o.param == 'username')?.msg
+              this.data.errors.password = res.errors.find(o => o.param == 'password')?.msg
             }
           })
           .catch(err => {

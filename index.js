@@ -6,7 +6,8 @@ import mongoose from 'mongoose';
 import passport from 'passport';
 import { json } from 'body-parser';
 import { DB_CONN, PORT } from './configs';
-import { WebRouter } from './routes';
+import { WebRouter, ApiAuthRouter } from './routes';
+import { ResponseService as RS } from './services';
 
 // Load global variables
 require('./global');
@@ -24,6 +25,7 @@ app.use(passport.initialize());
 
 // Inject routers
 app.use('/', WebRouter);
+app.use('/api/auth', ApiAuthRouter);
 
 // Static files
 app.use(express.static('public'));
@@ -31,13 +33,10 @@ app.use(express.static('uploads'));
 
 // 404 handler
 app.use(function(req, res, next) {
-   res.status = 404;
    if(req.accepts('html')) {
-      res.sendFile(path.join(ViewDir, '/errors/404.html'));
+      res.status(404).sendFile(path.join(ViewDir, '/errors/404.html'));
    } else {
-      res.json({
-         message: 'Endpoint not exists!'
-      })
+      RS.notFound(res);
    }
    return;
 });

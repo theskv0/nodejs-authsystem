@@ -1,9 +1,5 @@
 import path from "path";
-import { User } from './../models'
-
-export const authenticateUserView = (req, res) => {
-   return res.sendFile(path.join(ViewDir, '/login.html'));
-}
+import { User } from '../../models'
 
 export const authenticateUser = async (req, res) => {
    try {
@@ -30,10 +26,6 @@ export const authenticateUser = async (req, res) => {
          message: "An error occurred!"
       });
    }
-}
-
-export const registerUserView = (req, res) => {
-   return res.sendFile(path.join(ViewDir, '/register.html'));
 }
 
 export const registerUser = async (req, res) => {
