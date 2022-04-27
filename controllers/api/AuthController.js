@@ -6,11 +6,15 @@ export const authenticateUser = async (req, res) => {
       let user = await User.findOne({ username: req.body.username });
       if (await user.comparePassword(req.body.password)) {
          let token = await user.generateAccessToken();
+         res.cookie('token', token, {
+            sameSite: 'Strict',
+            maxAge: 1000*60*60*24*30,
+            httpOnly: true
+            // secure: true, // https only
+         });
          return res.status(200).json({
             message: "Success!",
-            data: {
-               token: 'Bearer ' + token
-            }
+            data: {}
          });
       }
       return res.status(422).json({

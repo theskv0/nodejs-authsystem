@@ -15,12 +15,16 @@ require('./global');
 // Import passport middleware
 require('./middlewares/passport-middleware.js');
 
+// Import cookie parser
+const cookieParser = require('cookie-parser');
+
 // Initialize express app
 const app = express();
 
 // Apply application middlewares
 app.use(cors());
 app.use(json());
+app.use(cookieParser());
 app.use(passport.initialize());
 
 // Inject routers

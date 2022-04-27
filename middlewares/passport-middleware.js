@@ -1,21 +1,17 @@
 import passport from 'passport';
 import { User } from '../models';
-import { APP_SECRET } from '../configs';
+import { APP_SECRET, APP_URL } from '../configs';
+import { ResponseService as RS } from '../services';
 import { Strategy, ExtractJwt } from 'passport-jwt';
 
-const options = {
-   secretOrKey: APP_SECRET,
-   jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken()
-};
-
-passport.use(new Strategy(options, async ({ id }, done) => {
-   try {
-      let user = User.findById(id);
-      if (!user) {
-         throw new Error('User not found.');
-      }
-      return done(null, user.getUserInfo());
-   } catch (err) {
-      return done(null, false)
+export const Authenticate = async (req, res, next) => {
+   if (req.cookies.token) {
+      return next();
    }
-}));
+   if (req.accepts('html')) {
+      res.redirect(APP_URL);
+   } else {
+      RS.unauthenticated(res);
+   }
+   return;
+}
