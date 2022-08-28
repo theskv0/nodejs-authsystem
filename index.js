@@ -2,6 +2,7 @@ import cors from 'cors';
 import path from 'path';
 import express from 'express';
 import consola from 'consola';
+import process from 'process';
 import mongoose from 'mongoose';
 import passport from 'passport';
 import { json } from 'body-parser';
@@ -36,8 +37,8 @@ app.use(express.static('public'));
 app.use(express.static('uploads'));
 
 // 404 handler
-app.use(function(req, res, next) {
-   if(req.accepts('html')) {
+app.use(function (req, res, next) {
+   if (req.accepts('html')) {
       res.status(404).sendFile(path.join(ViewDir, '/errors/404.html'));
    } else {
       RS.notFound(res);
@@ -54,11 +55,19 @@ const start = async () => {
       });
       consola.success('Database connected...');
       // Listen server
-      app.listen(PORT, () => consola.success('Server running on port: '+PORT));
-   } catch (err) { 
+      app.listen(PORT, () => consola.success('Server running on port: ' + PORT));
+   } catch (err) {
       consola.error('Server Error: ' + err.message);
    };
 };
+
+// Catch exceptions
+process.on('uncaughtException', function (err) {
+   // console.error((new Date).toUTCString() + ' uncaughtException:', err.message)
+   // console.error(err.stack)
+   // process.exit(1)
+   console.log('err');
+})
 
 // Start the application
 start();
